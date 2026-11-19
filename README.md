@@ -13,7 +13,14 @@ flutter pub get
 flutter run            # работает без Firebase — на моковом контенте
 ```
 
-Требования: Flutter 3.38+ (Dart 3.10+), Android SDK 24+.
+Требования: Flutter 3.50+ (Dart 3.14+), Android 7.0+ (minSdk 24).
+
+```bash
+flutter analyze
+flutter test
+# скриншоты экранов для ревью дизайна:
+flutter test test/screenshots --dart-define=SCREENSHOT_DIR=$PWD/build/shots
+```
 
 ## Структура
 
@@ -38,11 +45,21 @@ lib/
     diary/                  # (заготовка) дневник, лунный календарь
     profile/                # (заготовка) профиль, вход, настройки
 assets/
-  fonts/                    # Cormorant Garamond, Manrope (OFL)
+  fonts/                    # Cormorant Garamond, Manrope, Noto Sans Symbols (OFL)
+functions/                  # Cloud Functions (TypeScript): Звёздный круг, удаление данных, натальная карта
+firestore.rules             # правила доступа Firestore
 docs/
 ```
 
-Каждая фича: `data/` (репозитории, моки) → `domain/` (модели) → `presentation/` (экраны, виджеты, провайдеры).
+Каждая фича: `data/` (репозитории, моки) → `domain/` (модели) → `presentation/` (экраны, виджеты).
+Состояние — Riverpod (`Notifier`/`FutureProvider`), навигация — go_router
+(`StatefulShellRoute` для 5 вкладок, редирект на онбординг).
+
+## Астрономия и лицензии
+
+- Фаза и знак Луны — офлайн, свои формулы Миуса (`lib/core/astro/moon_phase.dart`).
+- Натальная карта и асцендент — Cloud Function на Astronomy Engine (MIT).
+- Swiss Ephemeris не используется (AGPL).
 
 ## Этапы
 

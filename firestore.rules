@@ -1,0 +1,58 @@
+rules_version = '2';
+
+// Правила доступа «Астры».
+// Принципы: контент — только чтение; личные данные — только владельцу;
+// всё, что влияет на других людей или деньги (премиум, индекс телефонов,
+// Звёздный круг), пишет только сервер (Cloud Functions / Admin SDK).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // ── Контент (гороскопы, карты, цитаты, вопросы, тесты, профили знаков) ──
+    // Читают все, включая гостей (анонимная сессия не обязательна).
+    match /content/{type}/items/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /horoscopes/{day}/signs/{sign} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── Профиль пользователя ──
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        // Эти поля меняет только сервер.
+        && !request.resource.data.diff(resource == null ? {} : resource.data)
+             .affectedKeys()
+             .hasAny(['premium', 'starCircleEnabled', 'createdAt']);
+      allow delete: if false; // удаление — через удаление аккаунта (Cloud Function)
+
+      // Дневник, ответы на вопрос дня, результаты тестов — личное.
+      match /diary/{entryId} {
+        allow read, write: if isOwner(uid)
+          && (request.resource == null || request.resource.data.text.size() <= 10000);
+      }
+      match /answers/{day} {
+        allow read, write: if isOwner(uid);
+      }
+      match /testResults/{testId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // Звёздный круг: список совпадений формирует сервер.
+      match /circle/{friendUid} {
+        allow read: if isOwner(uid);
+        allow write: if false;
+      }
+    }
+
+    // ── Индекс хэшей телефонов: клиентам недоступен вообще ──
+    match /phoneIndex/{hash} {
+      allow read, write: if false;
+    }
+  }
+}
