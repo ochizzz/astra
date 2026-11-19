@@ -5,6 +5,20 @@
 на устройстве. Как только конфигурация появится, `FirebaseBootstrap`
 поднимет Firebase и Crashlytics, а аналитика начнёт отправлять события.
 
+## Текущий статус проекта `astra-app-9a449` (тариф Spark)
+
+| Что | Статус |
+|---|---|
+| Android-приложение `app.astra.mobile` | ✅ зарегистрировано, `google-services.json` в репозитории |
+| SHA-1/SHA-256 общего debug-ключа (`android/keystores/debug.keystore`) | ✅ добавлены |
+| Firestore, регион eur3 | ✅ создан, правила задеплоены |
+| Контент дня `daily/*` | ✅ загружен на 120 дней (до 18.03.2027) |
+| App Check — Play Integrity | ✅ зарегистрирован (не принудительный) |
+| Crashlytics, Analytics, Messaging | ✅ API включены |
+| **Authentication → Google** | ⏳ включить в консоли (Get started → Google → Enable), затем перескачать `google-services.json` |
+| Release SHA (Play App Signing) | ⏳ перед публикацией |
+| iOS-приложение | ⏳ этап 2.0 |
+
 ## Что уже сделано в репозитории
 
 | Что | Где |
