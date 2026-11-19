@@ -67,7 +67,7 @@ firebase deploy --only firestore:rules
 
 dart run tool/build_daily.dart --days 120          # контент на 4 месяца
 gcloud auth application-default login
-(cd functions && npm install) && npm --prefix functions run seed -- --project <PROJECT_ID>
+(cd functions && npm install) && npm --prefix functions run seed -- --project astra-app-9a449
 ```
 Если в Firestore нет документа на нужный день, приложение молча берёт встроенный контент.
 

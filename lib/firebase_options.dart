@@ -1,6 +1,6 @@
 // ЗАГЛУШКА. Этот файл будет перезаписан командой:
 //
-//   flutterfire configure --project=<your-firebase-project-id> \
+//   flutterfire configure --project=astra-app-9a449 \
 //     --platforms=android,ios --android-package-name=app.astra.mobile \
 //     --ios-bundle-id=app.astra.mobile
 //
