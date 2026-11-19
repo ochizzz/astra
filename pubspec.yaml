@@ -1,0 +1,69 @@
+name: astra
+description: "Астра — зодиак, самопознание и отношения."
+publish_to: 'none'
+version: 0.1.2+3
+
+environment:
+  sdk: ^3.14.0
+
+dependencies:
+  cloud_firestore: ^7.2.0
+  firebase_analytics: ^13.1.0
+  firebase_app_check: ^0.5.2
+  firebase_auth: ^7.1.0
+  firebase_core: ^5.2.0
+  firebase_crashlytics: ^6.1.0
+  firebase_messaging: ^17.1.0
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.5.0
+  go_router: ^18.1.4
+  google_sign_in: ^7.2.0
+  intl: ^0.20.3
+  material_ui: ^1.1.0
+  sensors_plus: ^7.1.1
+  share_plus: ^13.3.1
+  shared_preferences: ^2.5.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    - family: CormorantGaramond
+      fonts:
+        - asset: assets/fonts/CormorantGaramond-Regular.ttf
+        - asset: assets/fonts/CormorantGaramond-Italic.ttf
+          style: italic
+        - asset: assets/fonts/CormorantGaramond-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/CormorantGaramond-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/CormorantGaramond-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/CormorantGaramond-Bold.ttf
+          weight: 700
+    # Подмножества Noto Sans Symbols (OFL): знаки зодиака, ☽ и ✦ ◆ ★ —
+    # чтобы символы выглядели одинаково на всех устройствах, а не как эмодзи.
+    - family: AstraSymbols
+      fonts:
+        - asset: assets/fonts/AstraSymbols-Zodiac.ttf
+    - family: AstraSymbolsStars
+      fonts:
+        - asset: assets/fonts/AstraSymbols-Stars.ttf
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Manrope-Regular.ttf
+        - asset: assets/fonts/Manrope-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Manrope-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Manrope-Bold.ttf
+          weight: 700
