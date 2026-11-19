@@ -15,7 +15,8 @@
 | Контент дня `daily/*` | ✅ загружен на 120 дней (до 18.03.2027) |
 | App Check — Play Integrity | ✅ зарегистрирован (не принудительный) |
 | Crashlytics, Analytics, Messaging | ✅ API включены |
-| **Authentication → Google** | ⏳ включить в консоли (Get started → Google → Enable), затем перескачать `google-services.json` |
+| Authentication → Google | ✅ включён, OAuth-клиенты в `google-services.json` |
+| App Distribution, группа `dev` | ✅ обновления на телефон без ручной установки APK (`tool/release.sh`) |
 | Release SHA (Play App Signing) | ⏳ перед публикацией |
 | iOS-приложение | ⏳ этап 2.0 |
 
