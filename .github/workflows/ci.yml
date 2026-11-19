@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Анализ и тесты
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.50.0
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - name: TypeScript (Cloud Functions)
+        working-directory: functions
+        run: npm ci && npx tsc --noEmit
+
+  distribute:
+    name: Сборка и выкладка в App Distribution
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+    steps:
+      - name: Нет секрета — пропускаем выкладку
+        if: env.FIREBASE_SERVICE_ACCOUNT == ''
+        run: echo "::notice::Добавьте секрет FIREBASE_SERVICE_ACCOUNT, чтобы сборки уходили на телефоны автоматически"
+      - uses: actions/checkout@v4
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+      - uses: actions/setup-java@v4
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: subosito/flutter-action@v2
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        with:
+          flutter-version: 3.50.0
+          channel: stable
+          cache: true
+      - name: Сборка APK
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        # Номер сборки растёт с каждым запуском CI (сдвиг — чтобы быть выше ручных сборок).
+        run: flutter build apk --release --split-per-abi --target-platform android-arm64 --build-number $((100 + ${{ github.run_number }}))
+      - name: Выкладка тестерам
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          npx --yes firebase-tools appdistribution:distribute \
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk \
+            --app 1:414498966999:android:8038ce56d7a0c72466cf92 \
+            --groups dev --project astra-app-9a449 \
+            --release-notes "$(git log -1 --pretty=%s)"
+          rm -f "$RUNNER_TEMP/sa.json"

@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 
-/// Карточка поверх звёздного неба: плотный тёмный фон (≈90% непрозрачности)
+/// Карточка поверх звёздного неба: тёмный фон (70% непрозрачности)
 /// и тонкая золотая кайма.
 class GlassCard extends StatelessWidget {
   const GlassCard({
