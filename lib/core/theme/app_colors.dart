@@ -14,6 +14,11 @@ abstract final class AppColors {
   static const lavender = Color(0xFFB9A3F0);
   static const moonPink = Color(0xFFF3D9E8);
 
+  // Карточки: плотный тёмно-фиолетовый фон, звёзды лишь слегка просвечивают,
+  // чтобы текст не смешивался с небом.
+  static const cardTop = Color(0xE6231A48);
+  static const cardBottom = Color(0xEB140E2D);
+
   // Текст
   static const textPrimary = Color(0xFFF5EFFF);
   static const textSecondary = Color(0xFFB8B0D0);

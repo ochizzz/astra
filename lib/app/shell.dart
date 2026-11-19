@@ -63,10 +63,10 @@ class AstraNavBar extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [
             AppColors.night.withValues(alpha: 0.0),
-            AppColors.night.withValues(alpha: 0.94),
-            AppColors.night.withValues(alpha: 0.96),
+            AppColors.night.withValues(alpha: 0.97),
+            AppColors.night.withValues(alpha: 0.99),
           ],
-          stops: const [0, 0.2, 1],
+          stops: const [0, 0.14, 1],
         ),
       ),
       child: Column(

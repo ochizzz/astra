@@ -3,7 +3,8 @@ import 'package:material_ui/material_ui.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 
-/// Полупрозрачная карточка с тонкой золотой каймой поверх звёздного неба.
+/// Карточка поверх звёздного неба: плотный тёмный фон (≈90% непрозрачности)
+/// и тонкая золотая кайма.
 class GlassCard extends StatelessWidget {
   const GlassCard({
     super.key,
@@ -29,8 +30,11 @@ class GlassCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: glow
-              ? [AppColors.gold.withValues(alpha: 0.13), Colors.white.withValues(alpha: 0.03)]
-              : [Colors.white.withValues(alpha: 0.085), Colors.white.withValues(alpha: 0.03)],
+              ? [
+                  Color.alphaBlend(AppColors.gold.withValues(alpha: 0.10), AppColors.cardTop),
+                  AppColors.cardBottom,
+                ]
+              : const [AppColors.cardTop, AppColors.cardBottom],
         ),
         // Тень под полупрозрачной карточкой просвечивает и «грязнит» фон,
         // поэтому «свечение» здесь — это золотой отлив и более яркая кайма.
