@@ -36,6 +36,18 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        // Общий отладочный ключ проекта: его SHA-1/SHA-256 зарегистрированы
+        // в Firebase, поэтому вход через Google работает у всех разработчиков.
+        // Только для debug! Release подписывается отдельным ключом (не в git).
+        getByName("debug") {
+            storeFile = rootProject.file("keystores/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

@@ -12,3 +12,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Общий ОТЛАДОЧНЫЙ ключ проекта (SHA зарегистрированы в Firebase). Release-ключи — никогда.
+!/keystores/debug.keystore
