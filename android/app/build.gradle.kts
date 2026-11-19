@@ -4,6 +4,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Firebase подключается автоматически, как только в android/app появится
+// google-services.json. Без него проект собирается и работает на моках.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+}
+
 android {
     namespace = "app.astra.mobile"
     compileSdk = flutter.compileSdkVersion

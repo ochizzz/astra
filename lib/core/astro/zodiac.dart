@@ -1,5 +1,3 @@
-import 'dart:ui' show Offset;
-
 enum ZodiacElement { fire, earth, air, water }
 
 extension ElementX on ZodiacElement {
@@ -11,12 +9,22 @@ extension ElementX on ZodiacElement {
   };
 }
 
+/// Точка звезды в нормализованных координатах 0..1. Свой тип вместо `Offset`,
+/// чтобы астрономическое ядро было чистым Dart (его использует и генератор
+/// контента в `tool/`).
+class StarPoint {
+  const StarPoint(this.dx, this.dy);
+
+  final double dx;
+  final double dy;
+}
+
 /// Стилизованная схема созвездия: точки в нормализованных координатах (0..1)
 /// и пары индексов — линии между звёздами.
 class Constellation {
   const Constellation(this.stars, this.lines, {this.brightest = 0});
 
-  final List<Offset> stars;
+  final List<StarPoint> stars;
   final List<(int, int)> lines;
 
   /// Индекс самой яркой звезды — рисуется крупнее и со свечением.
@@ -33,7 +41,7 @@ enum ZodiacSign {
     ruler: 'Марс',
     keywords: ['смелость', 'искра', 'первый шаг'],
     constellation: Constellation(
-      [Offset(0.1, 0.55), Offset(0.45, 0.38), Offset(0.75, 0.42), Offset(0.9, 0.58)],
+      [StarPoint(0.1, 0.55), StarPoint(0.45, 0.38), StarPoint(0.75, 0.42), StarPoint(0.9, 0.58)],
       [(0, 1), (1, 2), (2, 3)],
       brightest: 1,
     ),
@@ -48,14 +56,14 @@ enum ZodiacSign {
     keywords: ['нежность', 'устойчивость', 'вкус к жизни'],
     constellation: Constellation(
       [
-        Offset(0.5, 0.58),
-        Offset(0.4, 0.5),
-        Offset(0.33, 0.42),
-        Offset(0.6, 0.47),
-        Offset(0.68, 0.38),
-        Offset(0.12, 0.18),
-        Offset(0.9, 0.22),
-        Offset(0.72, 0.85),
+        StarPoint(0.5, 0.58),
+        StarPoint(0.4, 0.5),
+        StarPoint(0.33, 0.42),
+        StarPoint(0.6, 0.47),
+        StarPoint(0.68, 0.38),
+        StarPoint(0.12, 0.18),
+        StarPoint(0.9, 0.22),
+        StarPoint(0.72, 0.85),
       ],
       [(0, 1), (1, 2), (2, 5), (0, 3), (3, 4), (4, 6), (0, 7)],
     ),
@@ -70,12 +78,12 @@ enum ZodiacSign {
     keywords: ['любопытство', 'лёгкость', 'слово'],
     constellation: Constellation(
       [
-        Offset(0.3, 0.1),
-        Offset(0.3, 0.42),
-        Offset(0.22, 0.88),
-        Offset(0.6, 0.14),
-        Offset(0.62, 0.5),
-        Offset(0.7, 0.9),
+        StarPoint(0.3, 0.1),
+        StarPoint(0.3, 0.42),
+        StarPoint(0.22, 0.88),
+        StarPoint(0.6, 0.14),
+        StarPoint(0.62, 0.5),
+        StarPoint(0.7, 0.9),
       ],
       [(0, 1), (1, 2), (3, 4), (4, 5), (0, 3), (1, 4)],
       brightest: 3,
@@ -90,7 +98,7 @@ enum ZodiacSign {
     ruler: 'Луна',
     keywords: ['забота', 'интуиция', 'дом'],
     constellation: Constellation(
-      [Offset(0.5, 0.52), Offset(0.45, 0.12), Offset(0.18, 0.86), Offset(0.82, 0.8)],
+      [StarPoint(0.5, 0.52), StarPoint(0.45, 0.12), StarPoint(0.18, 0.86), StarPoint(0.82, 0.8)],
       [(0, 1), (0, 2), (0, 3)],
     ),
   ),
@@ -104,14 +112,14 @@ enum ZodiacSign {
     keywords: ['сияние', 'щедрость', 'сердце'],
     constellation: Constellation(
       [
-        Offset(0.2, 0.62),
-        Offset(0.2, 0.4),
-        Offset(0.3, 0.24),
-        Offset(0.46, 0.22),
-        Offset(0.45, 0.5),
-        Offset(0.75, 0.45),
-        Offset(0.9, 0.62),
-        Offset(0.68, 0.72),
+        StarPoint(0.2, 0.62),
+        StarPoint(0.2, 0.4),
+        StarPoint(0.3, 0.24),
+        StarPoint(0.46, 0.22),
+        StarPoint(0.45, 0.5),
+        StarPoint(0.75, 0.45),
+        StarPoint(0.9, 0.62),
+        StarPoint(0.68, 0.72),
       ],
       [(0, 1), (1, 2), (2, 3), (0, 4), (4, 5), (5, 6), (6, 7), (7, 4)],
     ),
@@ -126,14 +134,14 @@ enum ZodiacSign {
     keywords: ['ясность', 'забота о деталях', 'чистота'],
     constellation: Constellation(
       [
-        Offset(0.08, 0.3),
-        Offset(0.28, 0.36),
-        Offset(0.45, 0.5),
-        Offset(0.6, 0.38),
-        Offset(0.8, 0.28),
-        Offset(0.5, 0.82),
-        Offset(0.75, 0.64),
-        Offset(0.92, 0.86),
+        StarPoint(0.08, 0.3),
+        StarPoint(0.28, 0.36),
+        StarPoint(0.45, 0.5),
+        StarPoint(0.6, 0.38),
+        StarPoint(0.8, 0.28),
+        StarPoint(0.5, 0.82),
+        StarPoint(0.75, 0.64),
+        StarPoint(0.92, 0.86),
       ],
       [(0, 1), (1, 2), (2, 3), (3, 4), (2, 5), (3, 6), (6, 7)],
       brightest: 5,
@@ -149,11 +157,11 @@ enum ZodiacSign {
     keywords: ['гармония', 'красота', 'баланс'],
     constellation: Constellation(
       [
-        Offset(0.5, 0.14),
-        Offset(0.24, 0.45),
-        Offset(0.76, 0.45),
-        Offset(0.2, 0.82),
-        Offset(0.8, 0.82),
+        StarPoint(0.5, 0.14),
+        StarPoint(0.24, 0.45),
+        StarPoint(0.76, 0.45),
+        StarPoint(0.2, 0.82),
+        StarPoint(0.8, 0.82),
       ],
       [(0, 1), (0, 2), (1, 2), (1, 3), (2, 4)],
     ),
@@ -168,15 +176,15 @@ enum ZodiacSign {
     keywords: ['глубина', 'страсть', 'перерождение'],
     constellation: Constellation(
       [
-        Offset(0.1, 0.18),
-        Offset(0.16, 0.34),
-        Offset(0.1, 0.5),
-        Offset(0.34, 0.4),
-        Offset(0.5, 0.52),
-        Offset(0.6, 0.7),
-        Offset(0.75, 0.86),
-        Offset(0.9, 0.8),
-        Offset(0.93, 0.62),
+        StarPoint(0.1, 0.18),
+        StarPoint(0.16, 0.34),
+        StarPoint(0.1, 0.5),
+        StarPoint(0.34, 0.4),
+        StarPoint(0.5, 0.52),
+        StarPoint(0.6, 0.7),
+        StarPoint(0.75, 0.86),
+        StarPoint(0.9, 0.8),
+        StarPoint(0.93, 0.62),
       ],
       [(0, 1), (1, 2), (1, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8)],
       brightest: 3,
@@ -192,14 +200,14 @@ enum ZodiacSign {
     keywords: ['свобода', 'путь', 'вера'],
     constellation: Constellation(
       [
-        Offset(0.3, 0.42),
-        Offset(0.5, 0.3),
-        Offset(0.7, 0.4),
-        Offset(0.62, 0.58),
-        Offset(0.36, 0.62),
-        Offset(0.18, 0.78),
-        Offset(0.84, 0.72),
-        Offset(0.5, 0.12),
+        StarPoint(0.3, 0.42),
+        StarPoint(0.5, 0.3),
+        StarPoint(0.7, 0.4),
+        StarPoint(0.62, 0.58),
+        StarPoint(0.36, 0.62),
+        StarPoint(0.18, 0.78),
+        StarPoint(0.84, 0.72),
+        StarPoint(0.5, 0.12),
       ],
       [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0), (1, 7), (2, 6), (4, 5)],
       brightest: 3,
@@ -215,12 +223,12 @@ enum ZodiacSign {
     keywords: ['цель', 'выдержка', 'вершина'],
     constellation: Constellation(
       [
-        Offset(0.08, 0.28),
-        Offset(0.3, 0.46),
-        Offset(0.55, 0.78),
-        Offset(0.8, 0.52),
-        Offset(0.92, 0.34),
-        Offset(0.6, 0.38),
+        StarPoint(0.08, 0.28),
+        StarPoint(0.3, 0.46),
+        StarPoint(0.55, 0.78),
+        StarPoint(0.8, 0.52),
+        StarPoint(0.92, 0.34),
+        StarPoint(0.6, 0.38),
       ],
       [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 0)],
       brightest: 4,
@@ -236,13 +244,13 @@ enum ZodiacSign {
     keywords: ['свобода мысли', 'дружба', 'будущее'],
     constellation: Constellation(
       [
-        Offset(0.08, 0.3),
-        Offset(0.3, 0.24),
-        Offset(0.45, 0.4),
-        Offset(0.6, 0.28),
-        Offset(0.75, 0.45),
-        Offset(0.6, 0.72),
-        Offset(0.88, 0.82),
+        StarPoint(0.08, 0.3),
+        StarPoint(0.3, 0.24),
+        StarPoint(0.45, 0.4),
+        StarPoint(0.6, 0.28),
+        StarPoint(0.75, 0.45),
+        StarPoint(0.6, 0.72),
+        StarPoint(0.88, 0.82),
       ],
       [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (4, 6)],
       brightest: 3,
@@ -258,14 +266,14 @@ enum ZodiacSign {
     keywords: ['мечта', 'сострадание', 'тайна'],
     constellation: Constellation(
       [
-        Offset(0.14, 0.14),
-        Offset(0.3, 0.4),
-        Offset(0.44, 0.68),
-        Offset(0.55, 0.88),
-        Offset(0.7, 0.66),
-        Offset(0.84, 0.54),
-        Offset(0.92, 0.7),
-        Offset(0.8, 0.8),
+        StarPoint(0.14, 0.14),
+        StarPoint(0.3, 0.4),
+        StarPoint(0.44, 0.68),
+        StarPoint(0.55, 0.88),
+        StarPoint(0.7, 0.66),
+        StarPoint(0.84, 0.54),
+        StarPoint(0.92, 0.7),
+        StarPoint(0.8, 0.8),
       ],
       [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 4)],
       brightest: 3,

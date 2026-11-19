@@ -16,12 +16,16 @@ abstract final class PrefKeys {
 
   static const hapticsEnabled = 'settings.haptics';
   static const soundEnabled = 'settings.sound';
+  static const notificationsEnabled = 'settings.notifications';
+
+  /// Префикс ответов на вопрос дня — по нему ищем, что переносить в облако.
+  static const questionAnswerPrefix = 'today.answer.';
 
   /// Карта дня уже открыта: `today.cardFlipped.2026-11-19`.
   static String cardFlipped(String dayKey) => 'today.cardFlipped.$dayKey';
 
   /// Ответ на вопрос дня: `today.answer.2026-11-19`.
-  static String questionAnswer(String dayKey) => 'today.answer.$dayKey';
+  static String questionAnswer(String dayKey) => '$questionAnswerPrefix$dayKey';
 }
 
 /// Ключ дня в локальном времени: `yyyy-MM-dd`.

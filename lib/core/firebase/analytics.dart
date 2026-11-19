@@ -18,6 +18,9 @@ class AppAnalytics {
   void dailyCardFlipped({required String cardId}) =>
       _log('daily_card_flipped', {'card_id': cardId});
 
+  void login({required String method, required String source}) =>
+      _log('login', {'method': method, 'source': source});
+
   void questionAnswered() => _log('question_answered');
 
   void shared({required String contentType}) => _log('share', {'content_type': contentType});

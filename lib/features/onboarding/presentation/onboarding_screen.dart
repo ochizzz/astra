@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../app/router.dart';
 import '../../../core/astro/zodiac.dart';
+import '../../../core/auth/sign_in_ui.dart';
 import '../../../core/firebase/analytics.dart';
 import '../../../core/services/feedback_service.dart';
 import '../../../core/theme/app_colors.dart';
@@ -233,15 +234,15 @@ class _AstraEmblem extends StatelessWidget {
 
   static const _star = Constellation(
     [
-      Offset(0.5, 0.08),
-      Offset(0.62, 0.38),
-      Offset(0.92, 0.5),
-      Offset(0.62, 0.62),
-      Offset(0.5, 0.92),
-      Offset(0.38, 0.62),
-      Offset(0.08, 0.5),
-      Offset(0.38, 0.38),
-      Offset(0.5, 0.5),
+      StarPoint(0.5, 0.08),
+      StarPoint(0.62, 0.38),
+      StarPoint(0.92, 0.5),
+      StarPoint(0.62, 0.62),
+      StarPoint(0.5, 0.92),
+      StarPoint(0.38, 0.62),
+      StarPoint(0.08, 0.5),
+      StarPoint(0.38, 0.38),
+      StarPoint(0.5, 0.5),
     ],
     [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 0)],
     brightest: 8,
@@ -456,15 +457,10 @@ class _CardStepState extends ConsumerState<_CardStep> {
                 const SizedBox(height: 12),
                 GhostButton(
                   label: 'Сохранить в аккаунте Google',
-                  onPressed: () {
-                    ref.read(analyticsProvider).signInPromptShown(source: 'onboarding');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Вход появится совсем скоро. Пока всё бережно хранится на устройстве.',
-                        ),
-                      ),
-                    );
+                  onPressed: () async {
+                    if (await signInWithGoogleUi(context, ref, source: 'onboarding')) {
+                      widget.onFinish();
+                    }
                   },
                 ),
                 const SizedBox(height: 8),

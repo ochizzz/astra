@@ -6,7 +6,16 @@
 // запасным вариантом, если сети нет.
 
 import '../../../core/astro/zodiac.dart';
+import '../domain/daily_builder.dart';
 import '../domain/today_models.dart';
+
+/// Сборщик дня из встроенного контента (офлайн и генератор для Firestore).
+const mockDailyBuilder = DailyBuilder(
+  cards: mockCards,
+  quotes: mockQuotes,
+  questions: mockQuestions,
+  horoscopeTexts: mockHoroscopes,
+);
 
 const mockCards = <DailyCard>[
   DailyCard(

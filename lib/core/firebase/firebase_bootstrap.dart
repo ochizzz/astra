@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -33,10 +34,29 @@ abstract final class FirebaseBootstrap {
     try {
       await Firebase.initializeApp(options: options);
       await _setupCrashlytics();
+      await _activateAppCheck();
       return FirebaseStatus.ready;
     } catch (e, st) {
       debugPrint('[Firebase] ошибка инициализации: $e\n$st');
       return FirebaseStatus.failed;
+    }
+  }
+
+  /// App Check защищает Firestore и функции от запросов не из приложения.
+  /// В debug — отладочный провайдер: токен из логов нужно добавить в консоли
+  /// (App Check → Apps → Manage debug tokens).
+  static Future<void> _activateAppCheck() async {
+    try {
+      await FirebaseAppCheck.instance.activate(
+        providerAndroid: kDebugMode
+            ? const AndroidDebugProvider()
+            : const AndroidPlayIntegrityProvider(),
+        providerApple: kDebugMode
+            ? const AppleDebugProvider()
+            : const AppleAppAttestWithDeviceCheckFallbackProvider(),
+      );
+    } catch (e) {
+      debugPrint('[Firebase] App Check не активирован: $e');
     }
   }
 

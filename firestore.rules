@@ -16,7 +16,9 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
-    match /horoscopes/{day}/signs/{sign} {
+    // Контент дня: карта, цитата, вопрос и гороскопы всех знаков —
+    // один документ на день (одно чтение на пользователя в сутки).
+    match /daily/{day} {
       allow read: if true;
       allow write: if false;
     }
@@ -29,7 +31,8 @@ service cloud.firestore {
         && !request.resource.data.diff(resource == null ? {} : resource.data)
              .affectedKeys()
              .hasAny(['premium', 'starCircleEnabled', 'createdAt']);
-      allow delete: if false; // удаление — через удаление аккаунта (Cloud Function)
+      // Пользователь может удалить свои данные сам (удаление аккаунта).
+      allow delete: if isOwner(uid);
 
       // Дневник, ответы на вопрос дня, результаты тестов — личное.
       match /diary/{entryId} {

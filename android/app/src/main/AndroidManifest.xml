@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Сеть: Firebase, реклама, загрузка контента. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 13+: пуши. Спрашиваем только когда пользователь включает уведомления. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:label="Астра"
         android:name="${applicationName}"

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../astro/zodiac.dart';
+import '../auth/cloud_sync.dart';
 import '../services/preferences.dart';
 
 /// Профиль на устройстве. У гостя хранится локально; при входе в аккаунт
@@ -33,10 +34,12 @@ class UserProfileNotifier extends Notifier<UserProfile> {
     );
   }
 
-  Future<void> setBirthDate(DateTime date) async {
+  /// [sync] — отправить в аккаунт (если пользователь вошёл).
+  Future<void> setBirthDate(DateTime date, {bool sync = true}) async {
     final normalized = DateTime(date.year, date.month, date.day);
     state = state.copyWith(birthDate: normalized);
     await ref.read(sharedPreferencesProvider).setString(PrefKeys.birthDate, dayKeyOf(normalized));
+    if (sync) await ref.read(cloudSyncProvider).saveProfile(state);
   }
 
   Future<void> completeOnboarding() async {
