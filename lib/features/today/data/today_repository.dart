@@ -106,12 +106,15 @@ class TodayProgressNotifier extends Notifier<TodayProgress> {
   }
 
   /// Ответ сохраняется локально и, если пользователь вошёл, — в облако.
-  Future<void> saveAnswer(String answer) async {
+  Future<void> saveAnswer(String answer, {String? question}) async {
     final trimmed = answer.trim();
     if (trimmed.isEmpty) return;
     state = TodayProgress(cardFlipped: state.cardFlipped, answer: trimmed);
     await ref.read(sharedPreferencesProvider).setString(PrefKeys.questionAnswer(_day), trimmed);
-    await ref.read(cloudSyncProvider).saveAnswer(_day, trimmed);
+    if (question != null) {
+      await ref.read(sharedPreferencesProvider).setString(PrefKeys.questionText(_day), question);
+    }
+    await ref.read(cloudSyncProvider).saveAnswer(_day, trimmed, question: question);
   }
 }
 

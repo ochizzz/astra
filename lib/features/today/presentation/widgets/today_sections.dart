@@ -210,7 +210,7 @@ class MoonSection extends StatelessWidget {
                 Text(moon.name.title, style: text.headlineSmall),
                 const SizedBox(height: 2),
                 Text(
-                  'Луна в знаке ${moon.sign.title} · ${moon.lunarDay}-й лунный день · $percent%',
+                  'Луна ${moon.sign.inSign} · ${moon.lunarDay}-й лунный день · $percent%',
                   style: text.bodySmall,
                 ),
                 const SizedBox(height: 6),
@@ -248,7 +248,9 @@ class _QuestionSectionState extends ConsumerState<QuestionSection> {
   Future<void> _save() async {
     if (_controller.text.trim().isEmpty) return;
     FocusScope.of(context).unfocus();
-    await ref.read(todayProgressProvider.notifier).saveAnswer(_controller.text);
+    await ref
+        .read(todayProgressProvider.notifier)
+        .saveAnswer(_controller.text, question: widget.question.text);
     ref.read(appFeedbackProvider).success();
     ref.read(analyticsProvider).questionAnswered();
     setState(() => _editing = false);
