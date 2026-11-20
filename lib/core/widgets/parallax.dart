@@ -57,3 +57,7 @@ final parallaxProvider = Provider<ParallaxController>((ref) {
   ref.onDispose(controller.dispose);
   return controller;
 });
+
+/// Можно ли слушать датчики движения (встряхивание и т.п.).
+/// В тестах и скриншотах подменяется на false.
+final motionSensorsEnabledProvider = Provider<bool>((ref) => true);
