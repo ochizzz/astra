@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">Луна, карта и цитата дня</string>
+    <string name="widget_content_description">Астра: фаза Луны и карта дня</string>
+    <string name="widget_placeholder">Открой Астру ✦\nзвёзды готовят твой день</string>
+</resources>
