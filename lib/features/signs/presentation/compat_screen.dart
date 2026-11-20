@@ -38,7 +38,19 @@ class _CompatScreenState extends ConsumerState<CompatScreen> {
   late ZodiacSign _a = widget.initialA ?? ref.read(userProfileProvider).sign ?? ZodiacSign.aries;
   late ZodiacSign _b = widget.initialB ?? ZodiacSign.values[(_a.index + 4) % 12];
 
+  bool _picking = false;
+
   Future<void> _pick({required bool first}) async {
+    if (_picking) return; // двойной тап не открывает две шторки
+    _picking = true;
+    try {
+      await _pickSign(first: first);
+    } finally {
+      _picking = false;
+    }
+  }
+
+  Future<void> _pickSign({required bool first}) async {
     ref.read(appFeedbackProvider).tap();
     final picked = await showModalBottomSheet<ZodiacSign>(
       context: context,

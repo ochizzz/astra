@@ -2,8 +2,12 @@ import 'package:material_ui/material_ui.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import 'tap_guard.dart';
 
 /// Основная кнопка: золотой градиент со свечением и мягким нажатием.
+///
+/// Если [onPressed] возвращает Future, кнопка блокируется до его завершения
+/// и показывает индикатор — повторные нажатия не выполняют действие дважды.
 class GoldButton extends StatefulWidget {
   const GoldButton({
     super.key,
@@ -14,7 +18,7 @@ class GoldButton extends StatefulWidget {
   });
 
   final String label;
-  final VoidCallback? onPressed;
+  final GuardedTap? onPressed;
   final IconData? icon;
   final bool expand;
 
@@ -24,9 +28,22 @@ class GoldButton extends StatefulWidget {
 
 class _GoldButtonState extends State<GoldButton> {
   bool _pressed = false;
+  final _guard = TapGuard();
+
+  void _tap() {
+    final action = widget.onPressed;
+    if (action == null) return;
+    _guard.run(
+      action,
+      onBusyChanged: () {
+        if (mounted) setState(() {});
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final busy = _guard.busy;
     final enabled = widget.onPressed != null;
     return Semantics(
       button: true,
@@ -36,7 +53,7 @@ class _GoldButtonState extends State<GoldButton> {
         onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
         onTapCancel: () => setState(() => _pressed = false),
         onTapUp: enabled ? (_) => setState(() => _pressed = false) : null,
-        onTap: widget.onPressed,
+        onTap: enabled ? _tap : null,
         child: AnimatedScale(
           scale: _pressed ? 0.97 : 1,
           duration: const Duration(milliseconds: 120),
@@ -56,7 +73,13 @@ class _GoldButtonState extends State<GoldButton> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (widget.icon != null) ...[
+                  if (busy) ...[
+                    const SizedBox.square(
+                      dimension: 16,
+                      child: CircularProgressIndicator(strokeWidth: 1.6, color: AppColors.night),
+                    ),
+                    const SizedBox(width: 10),
+                  ] else if (widget.icon != null) ...[
                     Icon(
                       widget.icon,
                       size: 18,
@@ -84,7 +107,8 @@ class _GoldButtonState extends State<GoldButton> {
 }
 
 /// Второстепенная кнопка: прозрачная с тонкой золотой каймой.
-class GhostButton extends StatelessWidget {
+/// Защищена от повторных нажатий так же, как [GoldButton].
+class GhostButton extends StatefulWidget {
   const GhostButton({
     super.key,
     required this.label,
@@ -94,18 +118,34 @@ class GhostButton extends StatelessWidget {
   });
 
   final String label;
-  final VoidCallback? onPressed;
+  final GuardedTap? onPressed;
   final Widget? icon;
   final bool expand;
 
   @override
+  State<GhostButton> createState() => _GhostButtonState();
+}
+
+class _GhostButtonState extends State<GhostButton> {
+  final _guard = TapGuard();
+
+  @override
   Widget build(BuildContext context) {
+    final action = widget.onPressed;
     return SizedBox(
-      width: expand ? double.infinity : null,
+      width: widget.expand ? double.infinity : null,
       child: OutlinedButton(
-        onPressed: onPressed,
+        onPressed: action == null || _guard.busy
+            ? null
+            : () => _guard.run(
+                action,
+                onBusyChanged: () {
+                  if (mounted) setState(() {});
+                },
+              ),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.gold,
+          disabledForegroundColor: AppColors.goldDim,
           side: const BorderSide(color: AppColors.stroke, width: 0.8),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: const StadiumBorder(),
@@ -114,8 +154,17 @@ class GhostButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) ...[icon!, const SizedBox(width: 10)],
-            Flexible(child: Text(label, textAlign: TextAlign.center)),
+            if (_guard.busy) ...[
+              const SizedBox.square(
+                dimension: 14,
+                child: CircularProgressIndicator(strokeWidth: 1.4, color: AppColors.gold),
+              ),
+              const SizedBox(width: 10),
+            ] else if (widget.icon != null) ...[
+              widget.icon!,
+              const SizedBox(width: 10),
+            ],
+            Flexible(child: Text(widget.label, textAlign: TextAlign.center)),
           ],
         ),
       ),
@@ -124,34 +173,50 @@ class GhostButton extends StatelessWidget {
 }
 
 /// Текстовая ссылка-приглашение: «Уточнить по времени рождения →».
-class SoftLink extends StatelessWidget {
+class SoftLink extends StatefulWidget {
   const SoftLink({super.key, required this.label, required this.onTap});
 
   final String label;
-  final VoidCallback onTap;
+  final GuardedTap onTap;
+
+  @override
+  State<SoftLink> createState() => _SoftLinkState();
+}
+
+class _SoftLinkState extends State<SoftLink> {
+  final _guard = TapGuard();
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: () => _guard.run(
+        widget.onTap,
+        onBusyChanged: () {
+          if (mounted) setState(() {});
+        },
+      ),
       borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Text(
-                label,
-                style: AppTypography.textTheme.bodyMedium!.copyWith(
-                  color: AppColors.lavender,
-                  fontWeight: FontWeight.w600,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: _guard.busy ? 0.5 : 1,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  widget.label,
+                  style: AppTypography.textTheme.bodyMedium!.copyWith(
+                    color: AppColors.lavender,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 6),
-            const Icon(Icons.arrow_forward_rounded, size: 16, color: AppColors.lavender),
-          ],
+              const SizedBox(width: 6),
+              const Icon(Icons.arrow_forward_rounded, size: 16, color: AppColors.lavender),
+            ],
+          ),
         ),
       ),
     );

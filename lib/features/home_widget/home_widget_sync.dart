@@ -41,8 +41,11 @@ class HomeWidgetSync {
     _debounce = Timer(const Duration(seconds: 3), () => unawaited(refresh()));
   }
 
+  bool _running = false;
+
   Future<void> refresh({bool force = false}) async {
-    if (!_supported) return;
+    if (!_supported || _running) return;
+    _running = true;
     try {
       final prefs = _ref.read(sharedPreferencesProvider);
       final today = _ref.read(todayDateProvider);
@@ -82,6 +85,8 @@ class HomeWidgetSync {
       await prefs.setString(_signatureKey, signature);
     } catch (e, st) {
       debugPrint('[HomeWidget] не удалось обновить: $e\n$st');
+    } finally {
+      _running = false;
     }
   }
 }

@@ -46,15 +46,27 @@ class _DiaryEntryScreenState extends ConsumerState<DiaryEntryScreen> {
 
   void _close() => context.canPop() ? context.pop() : context.go(Routes.diary);
 
+  /// Идёт сохранение или удаление — повторные нажатия игнорируются.
+  bool _busy = false;
+
   Future<void> _save() async {
-    await ref
-        .read(diaryProvider.notifier)
-        .save(id: _existing?.id, date: _date, text: _text.text, mood: _mood);
+    if (_busy) return;
+    _busy = true;
+    try {
+      await ref
+          .read(diaryProvider.notifier)
+          .save(id: _existing?.id, date: _date, text: _text.text, mood: _mood);
+    } catch (_) {
+      _busy = false; // дать попробовать ещё раз
+      rethrow;
+    }
     ref.read(appFeedbackProvider).success();
     if (mounted) _close();
   }
 
   Future<void> _delete() async {
+    if (_busy) return;
+    _busy = true;
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -66,7 +78,10 @@ class _DiaryEntryScreenState extends ConsumerState<DiaryEntryScreen> {
         ],
       ),
     );
-    if (ok != true) return;
+    if (ok != true) {
+      _busy = false;
+      return;
+    }
     await ref.read(diaryProvider.notifier).delete(_existing!.id);
     if (mounted) _close();
   }

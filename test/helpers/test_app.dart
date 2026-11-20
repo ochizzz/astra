@@ -6,6 +6,7 @@ import 'package:astra/core/widgets/parallax.dart';
 import 'package:astra/features/today/data/today_repository.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:material_ui/material_ui.dart';
@@ -47,7 +48,11 @@ Future<void> loadAppFonts() async {
 
 /// Приложение с подменёнными зависимостями: локальное хранилище в памяти,
 /// параллакс без датчиков, фиксированная дата.
-Future<Widget> buildTestApp({Map<String, Object> prefs = const {}, DateTime? today}) async {
+Future<Widget> buildTestApp({
+  Map<String, Object> prefs = const {},
+  DateTime? today,
+  List<Override> overrides = const [],
+}) async {
   SharedPreferences.setMockInitialValues(prefs);
   await initializeDateFormatting('ru');
   final sp = await SharedPreferences.getInstance();
@@ -56,6 +61,7 @@ Future<Widget> buildTestApp({Map<String, Object> prefs = const {}, DateTime? tod
       sharedPreferencesProvider.overrideWithValue(sp),
       parallaxProvider.overrideWithValue(ParallaxController.still()),
       motionSensorsEnabledProvider.overrideWithValue(false),
+      ...overrides,
       todayDateProvider.overrideWithValue(today ?? DateTime(2026, 11, 19)),
     ],
     child: const AstraApp(),

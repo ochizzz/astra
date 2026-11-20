@@ -22,6 +22,10 @@ class AuthService {
   final Ref _ref;
   static Future<void>? _googleInit;
 
+  /// Текущая попытка входа: повторный вызов получает тот же результат,
+  /// а не открывает второе окно выбора аккаунта.
+  static Future<AuthResult>? _signingIn;
+
   bool get isAvailable => _ref.read(isFirebaseReadyProvider);
 
   Future<void> _ensureGoogle() => _googleInit ??= GoogleSignIn.instance.initialize();
@@ -35,8 +39,12 @@ class AuthService {
   }
 
   /// Вход через Google. Данные гостя переносятся в аккаунт.
-  Future<AuthResult> signInWithGoogle({required String source}) async {
-    if (!isAvailable) return AuthResult.unavailable;
+  Future<AuthResult> signInWithGoogle({required String source}) {
+    if (!isAvailable) return Future.value(AuthResult.unavailable);
+    return _signingIn ??= _signIn(source).whenComplete(() => _signingIn = null);
+  }
+
+  Future<AuthResult> _signIn(String source) async {
     try {
       final credential = await _googleCredential();
       if (credential == null) return AuthResult.failed;
