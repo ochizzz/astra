@@ -33,6 +33,7 @@ class Constellation {
 
 enum ZodiacSign {
   aries(
+    inSign: 'в Овне',
     title: 'Овен',
     glyph: '♈',
     start: (3, 21),
@@ -47,6 +48,7 @@ enum ZodiacSign {
     ),
   ),
   taurus(
+    inSign: 'в Тельце',
     title: 'Телец',
     glyph: '♉',
     start: (4, 20),
@@ -69,6 +71,7 @@ enum ZodiacSign {
     ),
   ),
   gemini(
+    inSign: 'в Близнецах',
     title: 'Близнецы',
     glyph: '♊',
     start: (5, 21),
@@ -90,6 +93,7 @@ enum ZodiacSign {
     ),
   ),
   cancer(
+    inSign: 'в Раке',
     title: 'Рак',
     glyph: '♋',
     start: (6, 21),
@@ -103,6 +107,7 @@ enum ZodiacSign {
     ),
   ),
   leo(
+    inSign: 'во Льве',
     title: 'Лев',
     glyph: '♌',
     start: (7, 23),
@@ -125,6 +130,7 @@ enum ZodiacSign {
     ),
   ),
   virgo(
+    inSign: 'в Деве',
     title: 'Дева',
     glyph: '♍',
     start: (8, 23),
@@ -148,6 +154,7 @@ enum ZodiacSign {
     ),
   ),
   libra(
+    inSign: 'в Весах',
     title: 'Весы',
     glyph: '♎',
     start: (9, 23),
@@ -167,6 +174,7 @@ enum ZodiacSign {
     ),
   ),
   scorpio(
+    inSign: 'в Скорпионе',
     title: 'Скорпион',
     glyph: '♏',
     start: (10, 23),
@@ -191,6 +199,7 @@ enum ZodiacSign {
     ),
   ),
   sagittarius(
+    inSign: 'в Стрельце',
     title: 'Стрелец',
     glyph: '♐',
     start: (11, 22),
@@ -214,6 +223,7 @@ enum ZodiacSign {
     ),
   ),
   capricorn(
+    inSign: 'в Козероге',
     title: 'Козерог',
     glyph: '♑',
     start: (12, 22),
@@ -235,6 +245,7 @@ enum ZodiacSign {
     ),
   ),
   aquarius(
+    inSign: 'в Водолее',
     title: 'Водолей',
     glyph: '♒',
     start: (1, 20),
@@ -257,6 +268,7 @@ enum ZodiacSign {
     ),
   ),
   pisces(
+    inSign: 'в Рыбах',
     title: 'Рыбы',
     glyph: '♓',
     start: (2, 19),
@@ -281,6 +293,7 @@ enum ZodiacSign {
   );
 
   const ZodiacSign({
+    required this.inSign,
     required this.title,
     required this.glyph,
     required this.start,
@@ -292,6 +305,9 @@ enum ZodiacSign {
   });
 
   final String title;
+
+  /// Предложный падеж с предлогом: «в Овне», «во Льве» — «Луна во Льве».
+  final String inSign;
 
   /// Символ знака. Для отрисовки используйте [textGlyph] —
   /// он запрещает системе подменять символ на эмодзи.

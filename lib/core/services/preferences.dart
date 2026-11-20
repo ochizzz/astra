@@ -26,6 +26,15 @@ abstract final class PrefKeys {
 
   /// Ответ на вопрос дня: `today.answer.2026-11-19`.
   static String questionAnswer(String dayKey) => '$questionAnswerPrefix$dayKey';
+
+  /// Текст вопроса дня, на который отвечали (для ленты дневника).
+  static String questionText(String dayKey) => 'today.question.$dayKey';
+
+  /// Записи дневника — JSON-список (гость хранит только локально).
+  static const diaryEntries = 'diary.entries';
+
+  /// id результата пройденного теста: `tests.result.element`.
+  static String testResult(String testId) => 'tests.result.$testId';
 }
 
 /// Ключ дня в локальном времени: `yyyy-MM-dd`.

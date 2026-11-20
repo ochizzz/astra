@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -63,7 +65,56 @@ class CloudSync {
       if (!prefs.containsKey(key) && text is String) await prefs.setString(key, text);
     }
 
+    // 4. Дневник: объединяем по id, побеждает более поздняя правка.
+    await _mergeDiary(doc.collection('diary'));
+
+    // 5. Результаты тестов: локальные → в облако, облачные → на устройство.
+    final results = doc.collection('testResults');
+    for (final key in prefs.getKeys().where((k) => k.startsWith('tests.result.'))) {
+      final testId = key.substring('tests.result.'.length);
+      await results.doc(testId).set({'result': prefs.getString(key)}, SetOptions(merge: true));
+    }
+    for (final d in (await results.get()).docs) {
+      final r = d.data()['result'];
+      if (r is String) await prefs.setString(PrefKeys.testResult(d.id), r);
+    }
+
     _ref.read(syncVersionProvider.notifier).bump();
+  }
+
+  Future<void> _mergeDiary(CollectionReference<Map<String, dynamic>> remote) async {
+    final prefs = _ref.read(sharedPreferencesProvider);
+    final local = <String, Map<String, Object?>>{
+      for (final e in _decodeList(prefs.getString(PrefKeys.diaryEntries)))
+        if (e['id'] is String) e['id']! as String: e,
+    };
+    final remoteDocs = await remote.get();
+    final merged = Map.of(local);
+    for (final d in remoteDocs.docs) {
+      final r = Map<String, Object?>.from(d.data());
+      final l = local[d.id];
+      if (l == null || _newer(r, l)) merged[d.id] = r;
+    }
+    // Локальные записи, которые остались «победителями», — в облако.
+    for (final e in local.values) {
+      if (identical(merged[e['id']], e)) await remote.doc(e['id']! as String).set(e);
+    }
+    await prefs.setString(PrefKeys.diaryEntries, jsonEncode(merged.values.toList()));
+  }
+
+  static bool _newer(Map<String, Object?> a, Map<String, Object?> b) =>
+      (a['updatedAt'] as String? ?? '').compareTo(b['updatedAt'] as String? ?? '') > 0;
+
+  static List<Map<String, Object?>> _decodeList(String? raw) {
+    if (raw == null) return const [];
+    try {
+      return (jsonDecode(raw) as List)
+          .cast<Map<Object?, Object?>>()
+          .map(Map<String, Object?>.from)
+          .toList();
+    } catch (_) {
+      return const [];
+    }
   }
 
   Future<void> saveProfile(UserProfile profile) async {
@@ -78,15 +129,41 @@ class CloudSync {
     );
   }
 
-  Future<void> saveAnswer(String day, String text) async {
+  Future<void> saveAnswer(String day, String text, {String? question}) async {
+    final user = _user;
+    if (user == null) return;
+    await _guard(
+      () => _userDoc(user.uid)
+          .collection('answers')
+          .doc(day)
+          .set({'text': text, 'question': ?question, 'updatedAt': FieldValue.serverTimestamp()}),
+    );
+  }
+
+  /// Запись дневника (JSON из `DiaryEntry.toJson`).
+  Future<void> saveDiaryEntry(Map<String, Object?> entry) async {
+    final user = _user;
+    if (user == null) return;
+    await _guard(
+      () => _userDoc(user.uid).collection('diary').doc(entry['id']! as String).set(entry),
+    );
+  }
+
+  Future<void> deleteDiaryEntry(String id) async {
+    final user = _user;
+    if (user == null) return;
+    await _guard(() => _userDoc(user.uid).collection('diary').doc(id).delete());
+  }
+
+  Future<void> saveTestResult(String testId, String resultId) async {
     final user = _user;
     if (user == null) return;
     await _guard(
       () =>
           _userDoc(user.uid)
-              .collection('answers')
-              .doc(day)
-              .set({'text': text, 'updatedAt': FieldValue.serverTimestamp()}),
+              .collection('testResults')
+              .doc(testId)
+              .set({'result': resultId, 'updatedAt': FieldValue.serverTimestamp()}),
     );
   }
 
