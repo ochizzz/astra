@@ -21,9 +21,22 @@ class PushNotifier extends Notifier<bool> {
 
   bool get available => ref.read(isFirebaseReadyProvider);
 
+  /// Идёт включение/выключение — быстрые переключения не запускают
+  /// параллельные запросы разрешения и подписки.
+  bool _busy = false;
+
   /// Возвращает false, если пользователь не дал разрешение.
   Future<bool> enable() async {
-    if (!available) return false;
+    if (!available || _busy) return false;
+    _busy = true;
+    try {
+      return await _enable();
+    } finally {
+      _busy = false;
+    }
+  }
+
+  Future<bool> _enable() async {
     final messaging = FirebaseMessaging.instance;
     final settings = await messaging.requestPermission();
     final granted =
@@ -46,6 +59,16 @@ class PushNotifier extends Notifier<bool> {
   }
 
   Future<void> disable() async {
+    if (_busy) return;
+    _busy = true;
+    try {
+      await _disable();
+    } finally {
+      _busy = false;
+    }
+  }
+
+  Future<void> _disable() async {
     if (available) {
       try {
         await FirebaseMessaging.instance.unsubscribeFromTopic(dailyTopic);

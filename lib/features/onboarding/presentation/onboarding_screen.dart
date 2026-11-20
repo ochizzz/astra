@@ -35,6 +35,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   ZodiacSign get _sign => ZodiacSign.fromDate(_birthDate);
 
+  /// Шаг назад. Проверяем индекс на момент нажатия: двойной тап по «Назад»
+  /// раньше уводил индекс в минус и ронял приложение.
+  void _back() {
+    if (_step.index == 0) return;
+    _go(_Step.values[_step.index - 1]);
+  }
+
   void _go(_Step step) {
     ref.read(appFeedbackProvider).tap();
     setState(() => _step = step);
@@ -58,7 +65,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return PopScope(
       canPop: _step == _Step.welcome,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _go(_Step.values[_step.index - 1]);
+        if (!didPop) _back();
       },
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -68,7 +75,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               _TopBar(
                 step: _step.index,
                 total: _Step.values.length,
-                onBack: _step == _Step.welcome ? null : () => _go(_Step.values[_step.index - 1]),
+                onBack: _step == _Step.welcome ? null : _back,
               ),
               Expanded(
                 child: AnimatedSwitcher(

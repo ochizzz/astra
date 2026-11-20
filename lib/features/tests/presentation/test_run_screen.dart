@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -31,8 +33,27 @@ class _TestRunScreenState extends ConsumerState<TestRunScreen> {
   final _totals = <String, int>{};
   final _history = <Map<String, int>>[];
   TestResult? _result;
+  bool _inputLocked = false;
+  Timer? _unlockTimer;
 
-  void _answer(TestAnswer a) {
+  static const _switchDuration = Duration(milliseconds: 450);
+
+  @override
+  void dispose() {
+    _unlockTimer?.cancel();
+    super.dispose();
+  }
+
+  /// [question] — номер вопроса, на который отвечают. Пока идёт анимация
+  /// смены вопроса, старый вопрос ещё на экране; нажатие на него (или
+  /// двойной тап) не должно засчитываться ответом на следующий вопрос.
+  void _answer(int question, TestAnswer a) {
+    if (question != _index || _result != null || _inputLocked) return;
+    // Пока новый вопрос «въезжает», ввод закрыт: иначе второй тап по тому же
+    // месту экрана засчитается ответом на следующий вопрос.
+    _inputLocked = true;
+    _unlockTimer?.cancel();
+    _unlockTimer = Timer(_switchDuration, () => _inputLocked = false);
     ref.read(appFeedbackProvider).tap();
     _history.add(a.scores);
     a.scores.forEach((k, v) => _totals[k] = (_totals[k] ?? 0) + v);
@@ -63,6 +84,9 @@ class _TestRunScreenState extends ConsumerState<TestRunScreen> {
   Widget build(BuildContext context) {
     final test = widget.test;
     final result = _result;
+    // Номер вопроса фиксируем при построении: у уходящего (анимируемого)
+    // вопроса останется старый номер, и его ответы будут проигнорированы.
+    final question = _index;
     return SubPage(
       parent: Routes.tests,
       trailing: result == null && _index > 0
@@ -77,7 +101,7 @@ class _TestRunScreenState extends ConsumerState<TestRunScreen> {
         ),
         const SizedBox(height: 28),
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 450),
+          duration: _switchDuration,
           transitionBuilder: (child, a) => FadeTransition(
             opacity: a,
             child: SlideTransition(
@@ -90,7 +114,7 @@ class _TestRunScreenState extends ConsumerState<TestRunScreen> {
                   key: ValueKey(_index),
                   number: _index + 1,
                   question: test.questions[_index],
-                  onAnswer: _answer,
+                  onAnswer: (a) => _answer(question, a),
                 )
               : _ResultView(
                   key: const ValueKey('result'),
