@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
+import 'package:astra/core/widgets/glass_card.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -70,6 +71,64 @@ void main() {
     await tester.tap(find.text('Знаки'));
     await pumpFor(tester, const Duration(seconds: 2));
     await shot(tester, '12_signs_tab');
+    await tester.tap(find.text('Близнецы').first);
+    await pumpFor(tester, const Duration(seconds: 4));
+    await shot(tester, '12a_sign_profile');
+    await tester.drag(find.byType(Scrollable).last, const Offset(0, -700));
+    await pumpFor(tester, const Duration(seconds: 3));
+    await shot(tester, '12b_sign_profile_scroll');
+    await tester.tap(find.text('Знаки'));
+    await pumpFor(tester, const Duration(seconds: 1));
+    await tester.tap(find.text('Совместимость'));
+    await pumpFor(tester, const Duration(seconds: 4));
+    await shot(tester, '12c_compat');
+    await tester.drag(find.byType(Scrollable).last, const Offset(0, -600));
+    await pumpFor(tester, const Duration(seconds: 3));
+    await shot(tester, '12d_compat_scroll');
+
+    await tester.tap(find.text('Тесты'));
+    await pumpFor(tester, const Duration(seconds: 2));
+    await shot(tester, '14_tests_tab');
+    await tester.tap(find.text('Какая ты стихия'));
+    await pumpFor(tester, const Duration(seconds: 2));
+    await shot(tester, '14a_test_question');
+    for (var i = 0; i < 8; i++) {
+      await tester.tap(find.byType(GlassCard).at(i % 4));
+      await pumpFor(tester, const Duration(milliseconds: 800));
+    }
+    await pumpFor(tester, const Duration(seconds: 4));
+    await shot(tester, '14b_test_result');
+    await tester.ensureVisible(find.text('Другие тесты'));
+    await pumpFor(tester, const Duration(milliseconds: 300));
+    await tester.tap(find.text('Другие тесты'));
+    await pumpFor(tester, const Duration(seconds: 1));
+    await tester.tap(find.text('Шар судьбы'));
+    await pumpFor(tester, const Duration(seconds: 2));
+    await shot(tester, '14c_ball_idle');
+    await tester.tap(find.text('Спросить звёзды'));
+    await pumpFor(tester, const Duration(milliseconds: 1500));
+    await shot(tester, '14d_ball_swirl');
+    await pumpFor(tester, const Duration(seconds: 3));
+    await shot(tester, '14e_ball_answer');
+
+    await tester.tap(find.text('Дневник'));
+    await pumpFor(tester, const Duration(seconds: 2));
+    await shot(tester, '15_diary_empty');
+    await tester.tap(find.text('Первая запись'));
+    await pumpFor(tester, const Duration(seconds: 1));
+    await tester.tap(find.text('Светло'));
+    await tester.enterText(
+      find.byType(TextField),
+      'Долго гуляла под растущей Луной и наконец решилась написать подруге, с которой давно не говорили.',
+    );
+    await pumpFor(tester, const Duration(milliseconds: 500));
+    await shot(tester, '15a_diary_editor');
+    await tester.tap(find.text('Сохранить'));
+    await pumpFor(tester, const Duration(seconds: 2));
+    await shot(tester, '15b_diary_feed');
+    await tester.tap(find.text('Лунный календарь'));
+    await pumpFor(tester, const Duration(seconds: 2));
+    await shot(tester, '15c_lunar_calendar');
     await tester.tap(find.text('Профиль'));
     await pumpFor(tester, const Duration(seconds: 2));
     await shot(tester, '13_profile_tab');

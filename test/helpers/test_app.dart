@@ -55,6 +55,7 @@ Future<Widget> buildTestApp({Map<String, Object> prefs = const {}, DateTime? tod
     overrides: [
       sharedPreferencesProvider.overrideWithValue(sp),
       parallaxProvider.overrideWithValue(ParallaxController.still()),
+      motionSensorsEnabledProvider.overrideWithValue(false),
       todayDateProvider.overrideWithValue(today ?? DateTime(2026, 11, 19)),
     ],
     child: const AstraApp(),
