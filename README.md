@@ -3,8 +3,9 @@
 Мобильное приложение о зодиаке, самопознании и отношениях.
 Flutter (Android + iOS) · Riverpod · go_router · Firebase.
 
-> Полная концепция продукта — в [docs/CONCEPT.md](docs/CONCEPT.md).
-> Настройка Firebase — в [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md).
+> Концепция — [docs/CONCEPT.md](docs/CONCEPT.md) · границы продукта — [docs/SCOPE.md](docs/SCOPE.md) ·
+> бизнес-модель — [docs/BUSINESS_MODEL.md](docs/BUSINESS_MODEL.md) · план — [docs/ROADMAP.md](docs/ROADMAP.md) ·
+> Firebase — [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md).
 
 ## Быстрый старт
 
